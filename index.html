@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>価値観ズレ診断クイズ</title>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8398161859137802"
+ crossorigin="anonymous"></script>
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:linear-gradient(135deg,#111827,#4c1d95,#831843);
+  color:#fff;
+}
+.wrap{max-width:900px;margin:auto;padding:20px}
+header{text-align:center;padding:28px 10px}
+h1{font-size:32px;margin:0 0 10px}
+.card{
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:24px;
+  padding:24px;
+  box-shadow:0 20px 60px rgba(0,0,0,.35);
+  backdrop-filter:blur(12px);
+}
+.ad{margin:18px 0;background:rgba(255,255,255,.08);padding:10px;border-radius:14px}
+.progress{height:12px;background:rgba(255,255,255,.18);border-radius:999px;overflow:hidden;margin:16px 0}
+.bar{height:100%;width:0;background:linear-gradient(90deg,#22d3ee,#f472b6,#facc15);transition:.3s}
+.qno{color:#fde68a;font-weight:800}
+.question{font-size:24px;font-weight:900;line-height:1.5;margin:14px 0 22px}
+.options{display:grid;gap:12px}
+button{
+  border:none;
+  cursor:pointer;
+  border-radius:16px;
+  padding:16px;
+  font-size:16px;
+  font-weight:800;
+}
+.option{background:#fff;color:#111827;text-align:left}
+.option:hover{transform:translateY(-2px);background:#fdf2f8}
+.start,.restart{
+  background:linear-gradient(135deg,#facc15,#fb7185);
+  color:#111827;
+  width:100%;
+  margin-top:18px;
+}
+.result{text-align:center}
+.score{font-size:56px;font-weight:900;color:#fde68a}
+.badge{
+  display:inline-block;
+  padding:8px 16px;
+  border-radius:999px;
+  background:#fff;
+  color:#111827;
+  font-weight:900;
+  margin:10px 0;
+}
+.hidden{display:none}
+.small{opacity:.9;line-height:1.8}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+<header>
+  <h1>価値観ズレ診断クイズ</h1>
+  <p>あなたは周りとどれくらい価値観がズレている？</p>
+</header>
+
+<div class="ad">
+  <!-- UIゲーム -->
+  <ins class="adsbygoogle"
+       style="display:block"
+       data-ad-client="ca-pub-8398161859137802"
+       data-ad-slot="6325875393"
+       data-ad-format="auto"
+       data-full-width-responsive="true"></ins>
+  <script>
+       (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+</div>
+
+<main class="card">
+  <div id="startScreen">
+    <h2>あなたの価値観タイプを診断</h2>
+    <p class="small">
+      全30問。直感で選んでください。<br>
+      回答すると自動で次の問題へ進みます。
+    </p>
+    <button class="start" onclick="startQuiz()">診断スタート</button>
+  </div>
+
+  <div id="quizScreen" class="hidden">
+    <div class="qno" id="qno"></div>
+    <div class="progress"><div class="bar" id="bar"></div></div>
+    <div class="question" id="question"></div>
+    <div class="options" id="options"></div>
+  </div>
+
+  <div id="resultScreen" class="hidden result">
+    <h2>診断結果</h2>
+    <div class="score" id="score"></div>
+    <div class="badge" id="rank"></div>
+    <p class="small" id="comment"></p>
+    <button class="restart" onclick="restartQuiz()">もう一度診断する</button>
+  </div>
+</main>
+</div>
+
+<script>
+const questions = [
+  {q:"友達が急に予定をキャンセル。あなたは？",a:[["理由があるなら仕方ない",1],["前日ならまだ許せる",2],["かなり信用を失う",3],["自分もよくあるので気にしない",0]]},
+  {q:"仕事で一番大事だと思うのは？",a:[["安定",1],["成長",2],["自由",3],["人間関係",0]]},
+  {q:"恋人との連絡頻度は？",a:[["毎日ほしい",3],["用事がある時でいい",1],["気分でOK",2],["少なくても信頼があればいい",0]]},
+  {q:"お金の使い方で近いのは？",a:[["将来のために貯める",0],["経験に使いたい",2],["欲しいものは買う",3],["バランス重視",1]]},
+  {q:"休日の理想は？",a:[["家でゆっくり",0],["友達と外出",1],["一人で好きなこと",2],["予定を詰め込む",3]]},
+  {q:"約束の時間に相手が10分遅刻。どう感じる？",a:[["連絡があればOK",1],["少し気になる",2],["かなり嫌",3],["自分も遅れるから平気",0]]},
+  {q:"人間関係で重視するのは？",a:[["気楽さ",1],["誠実さ",0],["刺激",3],["価値観の近さ",2]]},
+  {q:"SNSの投稿についてどう思う？",a:[["自由に発信したい",3],["見る専門でいい",0],["たまに投稿",1],["反応が欲しい",2]]},
+  {q:"飲み会で苦手なのは？",a:[["気を使う空気",2],["長時間拘束",3],["知らない人が多い",1],["特にない",0]]},
+  {q:"失敗した時に言われたい言葉は？",a:[["大丈夫、次いこう",1],["原因を考えよう",0],["よく頑張ったね",2],["気にしなくていい",3]]},
+  {q:"友達にお金を貸してと言われたら？",a:[["基本貸さない",0],["少額なら貸す",1],["関係性による",2],["困ってるなら貸す",3]]},
+  {q:"結婚に大事だと思うものは？",a:[["安心感",0],["価値観の一致",1],["自由の尊重",3],["経済力",2]]},
+  {q:"人に合わせるのは得意？",a:[["かなり得意",0],["相手による",1],["少し疲れる",2],["かなり苦手",3]]},
+  {q:"正論を言う人についてどう思う？",a:[["必要だと思う",1],["言い方次第",0],["少し苦手",2],["空気を読んでほしい",3]]},
+  {q:"人生で一番欲しいものは？",a:[["安心",0],["成功",2],["自由",3],["愛情",1]]},
+  {q:"グループで意見が割れた時は？",a:[["多数派に合わせる",0],["話し合う",1],["自分の意見を通す",3],["面倒なので引く",2]]},
+  {q:"プレゼントで嬉しいのは？",a:[["実用的なもの",0],["気持ちがこもったもの",1],["センスあるもの",2],["サプライズ感",3]]},
+  {q:"苦手な人との付き合い方は？",a:[["距離を置く",2],["最低限合わせる",0],["改善を試みる",1],["完全に切る",3]]},
+  {q:"理想の働き方は？",a:[["安定企業で長く",0],["副業もしたい",2],["独立したい",3],["楽しく働ければいい",1]]},
+  {q:"他人から変わってると言われたら？",a:[["少し気にする",1],["むしろ嬉しい",3],["内容による",2],["普通でいたい",0]]},
+  {q:"旅行の計画は？",a:[["細かく決める",0],["大枠だけ決める",1],["現地で決める",3],["相手に任せる",2]]},
+  {q:"会話で大事なのは？",a:[["共感",0],["面白さ",2],["本音",3],["テンポ",1]]},
+  {q:"嫌なことを頼まれたら？",a:[["断る",3],["理由を聞く",1],["我慢してやる",0],["相手による",2]]},
+  {q:"理想の友達関係は？",a:[["頻繁に会う",1],["たまに会っても自然",0],["刺激し合える",3],["深く狭く",2]]},
+  {q:"人から相談されたら？",a:[["まず共感",0],["解決策を出す",1],["本音で言う",3],["聞くだけにする",2]]},
+  {q:"流行についてどう思う？",a:[["気になる",1],["興味があれば乗る",0],["人と違う方がいい",3],["少し遅れて知る",2]]},
+  {q:"怒った時のタイプは？",a:[["黙る",2],["冷静に話す",0],["すぐ言う",3],["時間を置く",1]]},
+  {q:"理想の暮らしは？",a:[["便利な都会",1],["静かな郊外",0],["海外や地方もあり",3],["好きな人の近く",2]]},
+  {q:"一番ストレスなのは？",a:[["自由がない",3],["不安定",0],["退屈",2],["人に気を使う",1]]},
+  {q:"自分らしさとは？",a:[["無理しないこと",1],["人と違っても貫くこと",3],["周りと調和すること",0],["好きなことを選ぶこと",2]]}
+];
+
+let current = 0;
+let score = 0;
+
+function startQuiz(){
+  current = 0;
+  score = 0;
+  document.getElementById("startScreen").classList.add("hidden");
+  document.getElementById("resultScreen").classList.add("hidden");
+  document.getElementById("quizScreen").classList.remove("hidden");
+  showQuestion();
+}
+
+function showQuestion(){
+  const q = questions[current];
+  document.getElementById("qno").textContent = `Q${current+1} / ${questions.length}`;
+  document.getElementById("question").textContent = q.q;
+  document.getElementById("bar").style.width = `${(current/questions.length)*100}%`;
+
+  const options = document.getElementById("options");
+  options.innerHTML = "";
+
+  q.a.forEach(item=>{
+    const btn = document.createElement("button");
+    btn.className = "option";
+    btn.textContent = item[0];
+    btn.onclick = () => answer(item[1]);
+    options.appendChild(btn);
+  });
+}
+
+function answer(point){
+  score += point;
+  current++;
+  if(current < questions.length){
+    setTimeout(showQuestion, 300);
+  }else{
+    showResult();
+  }
+}
+
+function showResult(){
+  document.getElementById("quizScreen").classList.add("hidden");
+  document.getElementById("resultScreen").classList.remove("hidden");
+
+  const max = questions.length * 3;
+  const percent = Math.round(score / max * 100);
+
+  document.getElementById("score").textContent = percent + "点";
+
+  let rank, comment;
+
+  if(percent >= 85){
+    rank = "超個性派・価値観ズレ強め";
+    comment = "かなり自分軸が強いタイプ。周りと違う発想ができる反面、普通の感覚とズレる場面もありそうです。";
+  }else if(percent >= 70){
+    rank = "やや個性派タイプ";
+    comment = "一般的な価値観も分かりつつ、自分のこだわりも強いタイプ。人によっては少し独特に見られます。";
+  }else if(percent >= 50){
+    rank = "バランス型";
+    comment = "周りに合わせる力と自分の意見のバランスが取れています。大きな価値観ズレは少なめです。";
+  }else if(percent >= 30){
+    rank = "協調性高めタイプ";
+    comment = "周囲とのズレは少なく、場の空気に合わせるのが得意。ただし我慢しすぎには注意です。";
+  }else{
+    rank = "超安定・常識派タイプ";
+    comment = "かなり堅実で安心感のある価値観です。周りからは常識的で付き合いやすい人と思われやすいです。";
+  }
+
+  document.getElementById("rank").textContent = rank;
+  document.getElementById("comment").textContent = comment;
+}
+
+function restartQuiz(){
+  startQuiz();
+}
+</script>
+</body>
+</html>
